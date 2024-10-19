@@ -1,0 +1,35 @@
+
+interface Ethernet1
+   description leaf1
+   mtu 9214
+   no switchport
+   ip address 10.0.2.0/31
+!
+interface Ethernet2
+   description leaf2
+   no switchport
+   ip address 10.0.2.2/31
+!
+interface Ethernet3
+   no switchport
+   ip address 10.0.2.4/31
+!
+interface Loopback0
+   ip address 10.0.250.2/32
+
+ip routing
+!
+router bgp 65000
+   router-id 10.0.250.2
+   no bgp default ipv4-unicast
+   distance bgp 20 200 200
+   maximum-paths 4 ecmp 64
+   neighbor 10.0.2.1 remote-as 65001
+   neighbor 10.0.2.3 remote-as 65002
+   neighbor 10.0.2.5 remote-as 65003
+   !
+   address-family ipv4
+      neighbor 10.0.2.1 activate
+      neighbor 10.0.2.3 activate
+      neighbor 10.0.2.5 activate
+      network 10.0.250.2/3

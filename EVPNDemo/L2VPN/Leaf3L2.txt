@@ -1,0 +1,47 @@
+vlan 40
+   name test-l2-vxlan
+!
+
+!
+interface Ethernet1
+   no switchport
+   ip address 10.0.1.5/31
+!
+interface Ethernet2
+   no switchport
+   ip address 10.0.2.5/31
+!
+interface Ethernet4
+!
+interface Loopback0
+   ip address 10.0.250.5/32
+!
+interface Loopback1
+   ip address 10.0.255.5/32
+!
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 40 vni 1000040
+   vxlan vlan 40 flood vtep 10.0.255.3 10.0.255.4
+!
+ip routing
+!
+router bgp 65003
+   router-id 10.0.250.5
+   no bgp default ipv4-unicast
+   distance bgp 20 200 200
+   maximum-paths 4 ecmp 64
+   neighbor underlay peer group
+   neighbor underlay remote-as 65000
+   neighbor underlay maximum-routes 12000 warning-only
+   neighbor 10.0.1.4 peer group underlay
+   neighbor 10.0.2.4 peer group underlay
+   !
+   address-family ipv4
+      neighbor underlay activate
+      network 10.0.250.5/32
+      network 10.0.255.5/32
+!
+end

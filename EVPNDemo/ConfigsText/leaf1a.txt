@@ -1,0 +1,127 @@
+leaf1a#sh run | no-more
+! Command: show running-config
+! device: leaf1a (cEOSLab, EOS-4.32.0.1F-36950381.43201F (engineering build))
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$MpnYwT1cb/a5Q3DJ$EZCYn6pi1Et5/12saUqT2X1LVuK/mUrxXfUwdMkkiuBZvOonexcJM.QHUG2hgjw4XNnDZyJTwjVtVL1KHgUTK.
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname leaf1a
+!
+snmp-server community public ro
+snmp-server vrf MGMT
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 40
+   name test-l2-vxlan
+!
+vrf instance MGMT
+!
+management api http-commands
+   protocol http
+   protocol https ssl profile eAPI
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+management api gnmi
+   transport grpc def
+      vrf MGMT
+   provider eos-native
+!
+management api netconf
+   transport ssh test
+      vrf MGMT
+!
+management security
+   ssl profile eAPI
+      cipher-list HIGH:!eNULL:!aNULL:!MD5:!ADH:!ANULL
+      certificate eAPI.crt key eAPI.key
+!
+interface Ethernet1
+   description spine1
+   mtu 9214
+   no switchport
+   ip address 10.0.1.1/31
+!
+interface Ethernet2
+   description spine2
+   mtu 9214
+   no switchport
+   ip address 10.0.2.1/31
+!
+interface Ethernet3
+   switchport access vlan 40
+!
+interface Loopback0
+   ip address 10.0.250.3/32
+!
+interface Loopback1
+   ip address 10.0.255.3/32
+!
+interface Management0
+   description oob_management
+   description oob_management
+   vrf MGMT
+   ip address 172.100.100.4/24
+   ipv6 address 2001:172:100:100::3/80
+   ipv6 address 2001:172:100:100::6/80
+!
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan udp-port 4789
+   vxlan vlan 40 vni 100040
+   vxlan learn-restrict any
+!
+ip routing
+no ip routing vrf MGMT
+!
+ip route vrf MGMT 0.0.0.0/0 172.100.100.1
+!
+ipv6 route vrf MGMT ::/0 2001:172:100:100::1
+!
+router bgp 65001
+   router-id 10.0.250.3
+   no bgp default ipv4-unicast
+   distance bgp 20 200 200
+   maximum-paths 4 ecmp 64
+   neighbor evpn peer group
+   neighbor evpn remote-as 65000
+   neighbor evpn update-source Loopback0
+   neighbor evpn ebgp-multihop 3
+   neighbor evpn send-community extended
+   neighbor evpn maximum-routes 12000 warning-only
+   neighbor underlay peer group
+   neighbor underlay remote-as 65000
+   neighbor underlay maximum-routes 12000 warning-only
+   neighbor underlay_ibgp peer group
+   neighbor 10.0.1.0 peer group underlay
+   neighbor 10.0.2.0 peer group underlay
+   neighbor 10.0.250.1 peer group evpn
+   neighbor 10.0.250.2 peer group evpn
+   !
+   vlan 40
+      rd 65001:100040
+      route-target both 40:100040
+      redistribute learned
+   !
+   address-family evpn
+      neighbor evpn activate
+   !
+   address-family ipv4
+      neighbor underlay activate
+      neighbor underlay_ibgp activate
+      network 10.0.250.3/32
+      network 10.0.255.3/32
+!
+end

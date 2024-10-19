@@ -1,0 +1,41 @@
+---
+tenants:
+  # Tenant A VRFs / VLANs
+  - name: Tenant_A
+    mac_vrf_vni_base: 10000
+    vrfs:
+      - name: simon
+        vrf_vni: 10
+        # vtep_diagnostic:
+        #   loopback: 100
+        #   loopback_ip_range: 10.255.1.0/24
+        svis:
+          - id: 40
+            name: simon_40
+            tags:
+              - opzone_pod1
+              - opzone_pod2
+            enabled: true
+            ip_virtual_router_addresses: 
+              - 192.168.10.1
+
+            nodes:
+              DC1_LEAF1A:
+                ip_address: 192.168.10.2/24
+              DC1_LEAF2A:
+                ip_address: 192.168.10.3/24
+          - id: 34
+            name: simon_34
+            tags:
+              # - opzone_pod2
+              - opzone_pod3
+            enabled: true
+            ip_virtual_router_addresses: 
+              - 10.34.34.1
+            
+            nodes:
+              DC1_LEAF3A:
+                ip_address: 10.34.34.2/24
+
+        
+
