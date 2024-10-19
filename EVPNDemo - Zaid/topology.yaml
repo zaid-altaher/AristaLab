@@ -1,8 +1,8 @@
 name: avdirb
-# mgmt:
-#   network: custom_mgmt                # management network name
-#   ipv4-subnet: 172.100.100.0/24       # ipv4 range
-#   ipv6-subnet: 3fff:172:100:100::/80
+  mgmt:
+   network: custom_mgmt                # management network name
+   ipv4-subnet: 172.100.100.0/24       # ipv4 range
+   ipv6-subnet: 3fff:172:100:100::/80
 
 topology:
   kinds:
@@ -18,28 +18,28 @@ topology:
   nodes:
     spine1:
       kind: ceos
-      mgmt-ipv4: 172.100.100.2
+      mgmt-ipv4: 172.20.20.2
     spine2:
       kind: ceos
-      mgmt-ipv4: 172.100.100.3
+      mgmt-ipv4: 172.20.20.3
     leaf1a:
       kind: ceos
-      mgmt-ipv4: 172.100.100.4
+      mgmt-ipv4: 172.20.20.4
     leaf2a:
       kind: ceos
-      mgmt-ipv4: 172.100.100.5
+      mgmt-ipv4: 172.20.20.5
     leaf3a:
       kind: ceos
-      mgmt-ipv4: 172.100.100.6
+      mgmt-ipv4: 172.20.20.6
     client1:
       kind: ceos
-      mgmt-ipv4: 172.100.100.7
+      mgmt-ipv4: 172.20.20.7
     client2:
       kind: ceos
-      mgmt-ipv4: 172.100.100.8
+      mgmt-ipv4: 172.20.20.8
     client3:
       kind: ceos
-      mgmt-ipv4: 172.100.100.9
+      mgmt-ipv4: 172.20.20.9
     # client1:
     #   kind: linux
     #   mgmt-ipv4: 172.100.100.10
